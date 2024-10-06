@@ -59,7 +59,7 @@ char	**ft_split(char const *s, char c)
 	return (ret);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char *s, int start, int len)
 {
 	char	*ret;
 

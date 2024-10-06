@@ -14,12 +14,14 @@ void	heredocfill(int tempfd, char **argv)
 		{
 			if (ft_strncmp(buf, tmp, ft_strlen(tmp)) == 0)
 				break ;
-			write(tmpfile, buf, ft_strlen(buf);
+			write(tempfd, buf, ft_strlen(buf));
 		}
 		else
-			break
+			break ;
 	}
-	
+	free (tmp);
+	if (buf)
+		free (buf);
 }
 
 void	hellodoc(t_pipex *p, int argc, char **argv)
@@ -44,4 +46,22 @@ void	hellodoc(t_pipex *p, int argc, char **argv)
 		unlink (".heredoc_temp");
 		exit(1);
 	}
+}
+
+char	*ft_strrchr(const char *s, int c)
+{
+	char	hold;
+	char	*ret;
+
+	hold = c;
+	ret = 0;
+	while (*s)
+	{
+		if (*s == hold)
+			ret = (char *)s;
+		s++;
+	}
+	if (*s == hold)
+		ret = (char *)s;
+	return ((char *)ret);
 }

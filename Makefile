@@ -9,6 +9,7 @@ SRCS =	pipex.c \
 		gnl.c \
 		libft_utils.c \
 		libft_utils_2.c \
+		here_doc_handler.c \
 
 OBJS = ${SRCS:.c=.o}
 

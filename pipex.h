@@ -5,7 +5,7 @@
 # include <fcntl.h>
 # include <stdio.h>
 # include <sys/wait.h>
-
+# define BUFFER_SIZE 42
 typedef struct s_pipex
 {
 	int		infile;
@@ -32,15 +32,17 @@ void	ft_buffer_shift_left(char *Buffer, int move_size);
 char	*ft_special_join(char *str, char *Buffer);
 char	*get_next_line(int fd);
 //libft_utils
-char	*ft_substr(char const *s, unsigned int start, size_t len);
+char	*ft_substr(char *s, int start, int len);
 char	**ft_split(char const *s, char c);
 int	wordlen(char *s, char c);
 int	countwords(char const *s, char c);
-//libft_utils_2
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
-char	*ft_strdup(const char *s);
+//libft_utils_2
+char	*ft_strdup(char *s);
 void	ft_putstr_fd(char *s, int fd);
-
+int	ft_strncmp(char *s1, char *s2, size_t n);
+char	*ft_strcat(char *dst, char *src, char	*ret);
+char	*ft_strjoin(char *s1, char *s2);
 //pipex.c
 int main(int argc, char **argv, char **envp);
 void	ft_parent_process(t_pipex *p, int index, char **envp);
@@ -58,4 +60,8 @@ void	special_err(t_pipex *p, char *s);
 void	err(t_pipex *p, char *s);
 void	free_here(t_pipex *p);
 void	free_all(t_pipex *p);
+//heredoc
+void	heredocfill(int tempfd, char **argv);
+void	hellodoc(t_pipex *p, int argc, char **argv);
+char	*ft_strrchr(const char *s, int c);
 #endif
