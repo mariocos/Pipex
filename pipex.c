@@ -29,8 +29,10 @@ void	ft_parent_process(t_pipex *p, int index, char **envp)
 {
 	if(pipe(p->pipe) == -1)
 		err(p, "ERROR");
-	p->id = fork();
-	if (p->id == 0)// identifies child process
+	p->pid = fork();
+	if (p->pid < 0)
+		err(p, "Error");
+	if (!p->pid)// identifies child process
 	{
 		close(p->pipe[0]);
 		if (p->id == 0)//if first time calling
@@ -57,17 +59,17 @@ int main(int argc, char **argv, char **envp)
 	t_pipex	p;
 	int		ind;
 
-	ind = 0;
 	if (argc < 5)
 		ft_wrong_call();
 	ft_parsing_pipex(&p, argc, argv);
 	p.cmdnbr = argc - p.here_doc - 3;
 	ft_find_path(&p, envp);
-	p.id = 0;
-	while(p.id++ < p.cmdnbr)
+	p.id = -1;
+	while(++p.id < p.cmdnbr)
 		ft_parent_process(&p, p.id + p.here_doc, envp);
 	close(0);
 	waitpid(p.pid, NULL, 0);
+	ind = 0;
 	while(ind++ < p.cmdnbr - 1)
 		wait(NULL);
 	if (p.here_doc)
