@@ -12,7 +12,7 @@ void	heredocfill(int tempfd, char **argv)
 		buf = get_next_line(0);
 		if (buf)
 		{
-			if (ft_strncmp(buf, tmp, ft_strlen(tmp)) == 1)
+			if (ft_strncmp(buf, tmp, ft_strlen(tmp)) == 0)
 				break ;
 			write(tempfd, buf, ft_strlen(buf));
 			free (buf);

@@ -5,7 +5,7 @@ void	ft_parsing_pipex(t_pipex *p, int argc, char **argv)
 	int	arg_index;
 	int	index;
 
-	if (ft_strncmp(argv[1], "heredoc", 8) == 0)
+	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 		hellodoc(p, argc, argv);
 	else
 		ft_no_doc(p, argc, argv);

@@ -4,12 +4,12 @@ void	free_all(t_pipex *p)
 {
 	int	i;
 
-	i = 0;
-	while (p->path[i++])
+	i = -1;
+	while (p->path[++i])
 		free (p->path[i]);
 	free (p->path);
-	i = 0;
-	while (p->arg[i++])
+	i = -1;
+	while (p->arg[++i])
 		free (p->arg[i]);
 	free (p->arg);
 	close (p->infile);
@@ -20,8 +20,8 @@ void	free_here(t_pipex *p)
 {
 	int	i;
 
-	i = 0;
-	while (p->path[i++])
+	i = -1;
+	while (p->path[++i])
 		free(p->path[i]);
 	free (p->path);
 	close (p->infile);
