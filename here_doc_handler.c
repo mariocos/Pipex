@@ -5,7 +5,7 @@ void	heredocfill(int tempfd, char **argv)
 	char *tmp;
 	char *buf;
 
-	tmp = ft_strjoin(argv[2], "/n");
+	tmp = ft_strjoin(argv[2], "\n");//this should prove im an idiot
 	while (1)
 	{
 		write(1, "pipe to heredoc> ", 17);
