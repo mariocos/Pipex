@@ -4,12 +4,7 @@ CFLAGS = -Wall -Wextra -Werror -I includes
 NAME = pipex
 
 SRCS =	pipex.c \
-		parsing.c \
-		error_handling.c \
-		gnl.c \
-		libft_utils.c \
-		libft_utils_2.c \
-		here_doc_handler.c \
+		pipex_utils.c \
 
 OBJS = ${SRCS:.c=.o}
 

@@ -1,79 +1,67 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mariocos <mariocos@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/06 17:00:22 by mariocos          #+#    #+#             */
+/*   Updated: 2024/11/14 16:55:13 by mariocos         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
-void	ft_wrong_call(void)
+void	close_fd(int files[2])
 {
-	ft_putstr_fd("you should call this function like this:\
-./pipex infile command1 command2 outfile\n", 2);
-	exit(EXIT_FAILURE);
+	close(files[0]);
+	close(files[1]);
 }
 
-void	ft_no_doc(t_pipex *p, int argc, char **argv)
+void	ft_pipe(int files[2], char **argv, char **envp, int fd[2])
 {
-	p->here_doc = 0;
-	p->infile = open(argv[1], O_RDONLY);
-	p->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (p->infile == 0 || p->outfile == 0)
+	int	pid1;
+	int	pid2;
+
+	if (pipe(fd) < 0)
+		err("fail to open the pipe");
+	pid1 = fork();
+	if (pid1 < 0)
 	{
-		perror("error");
-		exit(EXIT_FAILURE);
+		close_fd(fd);
+		err("fail to fork for child1");
 	}
-}
-
-void	ft_access_check(t_pipex *p)
-{
-	if (access(p->cmdpath, F_OK) < 0)
-		err_all(p, "ERROR");//needs implementavoid	ft_putstr_fd(char *s, int fd)
-}
-
-void	ft_parent_process(t_pipex *p, int index, char **envp)
-{
-	if(pipe(p->pipe) == -1)
-		err(p, "ERROR");
-	p->pid = fork();
-	if (p->pid < 0)
-		err(p, "Error");
-	if (!p->pid)// identifies child process
+	if (pid1 == 0)
+		ft_child1(files, argv, envp, fd);
+	pid2 = fork();
+	if (pid2 < 0)
 	{
-		close(p->pipe[0]);
-		if (p->id == 0)//if first time calling
-		{
-			dup2(p->infile, STDIN_FILENO);// this way the standard input is now the infile
-			dup2(p->pipe[1], STDOUT_FILENO);// this way the standard output is the write end of the pipe
-		}
-		else if (p->id == p->cmdnbr - 1)//if last call
-			dup2(p->outfile, STDOUT_FILENO);//this way it writes to the outfile like it was the standard out
-		else//if any other call between first and last
-			dup2(p->pipe[1], STDOUT_FILENO);//writes to the write end of the pipe like the standard out
-		ft_arg_setup(p, index);
-		execve(p->cmdpath, p->cmd, envp);
-		free_all(p);
-		exit(127);
+		close_fd(fd);
+		err("fail to fork for child2");
 	}
-	close(p->pipe[1]);
-	dup2(p->pipe[0], STDIN_FILENO);
-	close(p->pipe[0]);
+	if (pid2 == 0)
+		ft_child2(files, argv, envp, fd);
+	close_fd(fd);
+	close_fd(files);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	t_pipex	p;
-	int		ind;
+	int	files[2];
+	int	fd[2];
 
-	if (argc < 5)
-		ft_wrong_call();
-	ft_parsing_pipex(&p, argc, argv);
-	p.cmdnbr = argc - p.here_doc - 3;
-	ft_find_path(&p, envp);
-	p.id = -1;
-	while(++p.id < p.cmdnbr)
-		ft_parent_process(&p, p.id + p.here_doc, envp);
-	close(0);
-	waitpid(p.pid, NULL, 0);
-	ind = 0;
-	while(ind++ < p.cmdnbr - 1)
-		wait(NULL);
-	if (p.here_doc)
-		unlink(".heredoc_temp");
-	free_all(&p);//missing implementation
-	return (1);
+	if (argc != 5)
+	{
+		write (1, "please call as follows:", 23);
+		write (1, "./pipex [infile] [cmd1] [cmd2] [outfile]\n", 41);
+		exit (1);
+	}
+	else
+	{
+		files[0] = check_infile(argv);
+		files[1] = check_outfile(argv, argc);
+		ft_pipe(files, argv, envp, fd);
+	}
 }
